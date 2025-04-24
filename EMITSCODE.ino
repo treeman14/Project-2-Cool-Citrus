@@ -1,81 +1,105 @@
 /*
-  Blink
-//Tre Edit Test
-//Jenna Edit Test!!!!
-  Turns an LED on for one second, then off for one second, repeatedly.
+AET 313 Project 2: Monster's University
+Team: Cool Citrus
+Jenna Barro & Tre Trevino
 
-  Most Arduinos have an on-board LED you can control. On the UNO, MEGA and ZERO
-  it is attached to digital pin 13, on MKR1000 on pin 6. LED_BUILTIN is set to
-  the correct LED pin independent of which board is used.
-  If you want to know what pin the on-board LED is connected to on your Arduino
-  model, check the Technical Specs of your board at:
-  https://www.arduino.cc/en/Main/Products
-
-  modified 8 May 2014
-  by Scott Fitzgerald
-  modified 2 Sep 2016
-  by Arturo Guadalupi
-  modified 8 Sep 2016
-  by Colby Newman
-
-  This example code is in the public domain.
-
-  https://www.arduino.cc/en/Tutorial/BuiltInExamples/Blink
+INTERACTIONS
+- 1: police step through and door closes > sulley drops
+- 2: sulley knocks down beds
+- 3: sulley roars
+- 4: door opens & can lights up
+- 5: door closes & door lights up
 */
 
-// the setup function runs once when you press reset or power the board
+// -------------------------------------------------------------------------
+
+#include <Servo.h>
+
+//declare variables
+Servo myservo1;
+Servo myservo3;
+Servo myservo4;
+Servo myservo5;
+const int buttonPin1 = 12;  //1: cabin door
+const int buttonPin2 = 13;  //2: sulley jump down
+const int buttonPin3 = 8;  //3: bed fall
+const int buttonPin4 = 6;  //4: monster roar
+const int buttonPin5 = 2;  //5: monster door
+const int ledPin = 4;
+const int piezoPin = 7;
+int check1 = 0;
+int check2 = 0;
+int check3 = 0;
+int check4 = 0;
+
 void setup() {
-  // initialize digital pin LED_BUILTIN as an output.
-  pinMode(LED_BUILTIN, OUTPUT);
+  myservo1.attach(11); //1: door close
+  myservo1.write(0);
+  myservo3.attach(10); //3: beds fall
+  myservo3.write(0);
+  myservo4.attach(9); //2: mike and sulley jump down
+  myservo4.write(0);
+  myservo5.attach(3); //4 & 5: monster door
+  myservo5.write(0);
+  pinMode(buttonPin1, INPUT);
+  pinMode(buttonPin2, INPUT);
+  pinMode(buttonPin4, INPUT);
+  pinMode(buttonPin5,INPUT);
+  pinMode(ledPin, OUTPUT);
+  pinMode(piezoPin, OUTPUT);
+
 }
 
-// the loop function runs over and over again forever
 void loop() {
-  //BLINK START
-  digitalWrite(LED_BUILTIN, HIGH);  // turn the LED on (HIGH is the voltage level)
-  delay(50);                      // wait for a second
-  digitalWrite(LED_BUILTIN, LOW);   // turn the LED off by making the voltage LOW
-  delay(3000);
+  //1: CABIN DOOR CLOSE (servo)
+  if (digitalRead(buttonPin1) == HIGH) {
+    myservo1.write(80);
+    //servo4.write(180);
+    check1 = check1 + 1; 
+  } else if (digitalRead(buttonPin1) == LOW && check1 >= 1) {
+    myservo1.write(80);
+    //myservo4.write(180);
+  } else {
+    myservo1.write(0);
+    myservo4.write(0);
+  }
 
-  //LETTER E
-  digitalWrite(LED_BUILTIN, HIGH);  // turn the LED on (HIGH is the voltage level)
-  delay(1000);                      // wait for a second
-  digitalWrite(LED_BUILTIN, LOW);   // turn the LED off by making the voltage LOW
-  delay(1000);
-  //LETTER M
-  digitalWrite(LED_BUILTIN, HIGH);  // turn the LED on (HIGH is the voltage level)
-  delay(3000);
-  digitalWrite(LED_BUILTIN, LOW);  // turn the LED off by making the voltage LOW
-  delay(1000);
-  digitalWrite(LED_BUILTIN, HIGH);  // turn the LED on (HIGH is the voltage level)
-  delay(3000);
-  digitalWrite(LED_BUILTIN, LOW);   // turn the LED on (HIGH is the voltage level)
-  delay(1000);
-  //LETTER I                      // wait for a second
-  digitalWrite(LED_BUILTIN, HIGH);  // turn the LED off by making the voltage LOW
-  delay(1000);
-  digitalWrite(LED_BUILTIN, LOW);  // turn the LED on (HIGH is the voltage level)
-  delay(1000);
-  digitalWrite(LED_BUILTIN, HIGH);  // turn the LED on (HIGH is the voltage level)
-  delay(1000);
-  digitalWrite(LED_BUILTIN, LOW);  // turn the LED off by making the voltage LOW
-  delay(1000);
-  //LETTER T
-  digitalWrite(LED_BUILTIN, HIGH);  // turn the LED on (HIGH is the voltage level)
-  delay(3000);
-  digitalWrite(LED_BUILTIN, LOW);  // turn the LED off by making the voltage LOW
-  delay(1000);
-  //LETTER S
-  digitalWrite(LED_BUILTIN, HIGH);  // turn the LED on (HIGH is the voltage level)
-  delay(1000);
-  digitalWrite(LED_BUILTIN, LOW);  // turn the LED off by making the voltage LOW
-  delay(1000);
-  digitalWrite(LED_BUILTIN, HIGH);  // turn the LED on (HIGH is the voltage level)
-  delay(1000);
-  digitalWrite(LED_BUILTIN, LOW);  // turn the LED off by making the voltage LOW
-  delay(1000);
-  digitalWrite(LED_BUILTIN, HIGH);  // turn the LED on (HIGH is the voltage level)
-  delay(1000);
-  digitalWrite(LED_BUILTIN, LOW);  // turn the LED off by making the voltage LOW
-  delay(1000);                      // wait for a second
+  //2: SULLEY & MIKE JUMP DOWN (servo)
+  if (digitalRead(buttonPin2) == HIGH) {
+    myservo4.write(180);
+    check2 = check2 + 1;
+  } else if (digitalRead(buttonPin2) == LOW && check2 >= 1) {
+    myservo4.write(180);
+  } else {
+    myservo4.write(0);
+  }
+
+  //3: KNOCK DOWN BED (servo)
+  if (digitalRead(buttonPin3) == HIGH) {
+    myservo3.write(80);
+    check3 = check3 + 1; 
+  } else if (digitalRead(buttonPin3) == LOW && check3 >= 1) {
+    myservo3.write(80);
+  } else {
+    myservo3.write(0);
+  }
+
+  //4: MONSTER ROAR & MONSTER DOOR OPEN & LIGHT UP (piezo)
+  if (digitalRead(buttonPin4) == HIGH) {
+    tone(piezoPin, 394, 1000); 
+    myservo5.write(75);
+    check4 = check4 + 1;
+  } else if (digitalRead(buttonPin4) == LOW && check4 == 1) {
+    noTone(piezoPin);
+    myservo5.write(75);
+    check4 = check4 + 1;
+  } 
+
+  //5: MONSTER DOOR CLOSE & LIGHT UP (servo & led)
+  if (digitalRead(buttonPin5) == HIGH && digitalRead(buttonPin4) == LOW && check4 > 1) {
+    myservo5.write(0);
+    digitalWrite(ledPin, HIGH);
+  } else {
+    digitalWrite(ledPin, LOW);
+  }
 }
